@@ -1,4 +1,4 @@
-from keras.layers import Dense, Flatten
+from keras.layers import Dense, Flatten, Dropout, BatchNormalization, Conv2D, MaxPool2D, Reshape
 from keras.models import Sequential
 from keras.callbacks import Callback
 import pandas as pd
@@ -51,9 +51,22 @@ num_samples, num_classes = train_emotions.shape
 
 train_faces /= 255.
 val_faces /= 255.
+print("NUMCLasses")
+print(num_classes)
 
 model = Sequential()
+model.add(Reshape((48,48,1), input_shape=input_shape))
+model.add(Conv2D(16, (3,3), activation='relu', input_shape=input_shape))
+#use train_faces.shape[1], train_faces.shape[2]
+
+model.add(Conv2D(16, (3,3), activation='relu'))
+model.add(MaxPool2D(pool_size=(2,2)))
+model.add(Dropout(0.5))
+model.add(Conv2D(16, (3,3), activation='relu'))
+model.add(Dropout(0.5))
 model.add(Flatten(input_shape=input_shape))
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation="softmax"))
 
 model.compile(optimizer='adam', loss='categorical_crossentropy',
